@@ -41,3 +41,9 @@ ignore = [
 
 [tool.ruff.format]
 indent-style = "space"
+
+[tool.setuptools]
+packages = ["churn"]
+
+[tool.setuptools.package-data]
+churn = ["**/*.py"]
