@@ -1,0 +1,23 @@
+bundle:
+  name: mlops-with-databricks-bundle
+
+include:
+  - resources/*.yml
+
+artifacts:
+  default:
+    type: whl
+    build: uv build
+    path: .
+
+variables:
+  configs_dir:
+    description: Directory containing configuration files.
+    default: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.environment}/files/configs
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://adb-1713302240061567.7.azuredatabricks.net/

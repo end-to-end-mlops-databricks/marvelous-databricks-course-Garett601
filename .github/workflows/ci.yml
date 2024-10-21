@@ -15,11 +15,14 @@ jobs:
         uses: astral-sh/setup-uv@v3
 
       - name: Set up Python
-        run: uv python install 3.11
+        run: |
+          uv python install 3.11
+          uv venv -p 3.11
 
       - name: Install the dependencies
-        run: uv sync 
+        run: uv sync
 
       - name: Run pre-commit checks
         run: |
-          pre-commit run --all-files
+          uv pip install pre-commit
+          uv run pre-commit run --all-files

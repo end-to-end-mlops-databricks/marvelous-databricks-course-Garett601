@@ -10,7 +10,7 @@ __pycache__/
 *.so
 
 # Folders
-# data/
+data/
 
 # Distribution / packaging
 .Python
@@ -95,3 +95,6 @@ dmypy.json
 # VS code configuration
 .vscode
 .history
+
+.databricks
+.ruff_cache/
