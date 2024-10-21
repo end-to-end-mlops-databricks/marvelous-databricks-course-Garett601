@@ -26,16 +26,35 @@ class DataProcessor:
 
     def load_data(self, dataset_id: int) -> None:
         """
-        Load the dataset from UCI ML Repository.
+        Load the dataset from UCI ML Repository or local CSV file.
 
         Parameters
         ----------
         dataset_id : int
-            The ID of the dataset to fetch.
+            The ID of the dataset to fetch from UCI ML Repository.
+
+        Notes
+        -----
+        If loading from UCI ML Repository fails, the method will attempt to load
+        the data from '../data/Tetuan City power consumption.csv'.
         """
-        dataset = fetch_ucirepo(id=dataset_id)
-        logger.info("Loading dataset:\n" f"  ID: {dataset_id}\n" f"  Name: {dataset.metadata.name}")
-        self.data = dataset.data.original
+        try:
+            dataset = fetch_ucirepo(id=dataset_id)
+            logger.info(
+                "Loading dataset from UCI ML Repository:\n" f"  ID: {dataset_id}\n" f"  Name: {dataset.metadata.name}"
+            )
+            self.data = dataset.data.original
+        except Exception as e:
+            logger.warning(f"Failed to load data from UCI ML Repository: {e}")
+            logger.info("Attempting to load data from local CSV file")
+            csv_path = "../data/Tetuan City power consumption.csv"
+            try:
+                self.data = pd.read_csv(csv_path)
+                logger.info(f"Successfully loaded data from {csv_path}")
+            except Exception as e:
+                logger.error(f"Failed to load data from {csv_path}: {e}")
+                raise
+
         self._clean_column_names()
 
     def _clean_column_names(self) -> None:

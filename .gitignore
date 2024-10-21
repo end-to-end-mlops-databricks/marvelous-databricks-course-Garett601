@@ -10,7 +10,7 @@ __pycache__/
 *.so
 
 # Folders
-# data/
+data/
 
 # Distribution / packaging
 .Python
