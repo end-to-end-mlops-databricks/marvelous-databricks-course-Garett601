@@ -1,13 +1,11 @@
 """Tests for utility functions in the power consumption project."""
 
-import os
-import tempfile
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pytest
-import yaml
 
 from power_consumption.utils import (
     load_config,
@@ -18,16 +16,18 @@ from power_consumption.utils import (
 
 
 def test_load_config():
-    config = {"key1": "value1", "key2": 2}
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as temp_file:
-        yaml.dump(config, temp_file)
-        temp_file_path = temp_file.name
+    conftest_path = Path(__file__).parent / "conftest.yml"
 
-    try:
-        loaded_config = load_config(temp_file_path)
-        assert loaded_config == config
-    finally:
-        os.unlink(temp_file_path)
+    loaded_config = load_config(conftest_path)
+
+    assert loaded_config["catalog_name"] == "heiaepgah71pwedmld01001"
+    assert loaded_config["schema_name"] == "power_consumption"
+    assert loaded_config["parameters"]["learning_rate"] == 0.01
+    assert loaded_config["parameters"]["n_estimators"] == 1000
+    assert loaded_config["parameters"]["max_depth"] == 6
+    assert "Temperature" in loaded_config["num_features"]
+    assert "DayOfWeek" in loaded_config["cat_features"]
+    assert "Zone 1 Power Consumption" in loaded_config["target"]
 
 
 @pytest.mark.parametrize("n_targets", [1, 3])
