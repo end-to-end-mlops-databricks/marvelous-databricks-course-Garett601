@@ -16,6 +16,8 @@ dependencies = [
     "scipy>=1.14.1, <2",
     "matplotlib>=3.9.2, <4",
     "databricks-feature-engineering>=0.6, <1",
+    "ucimlrepo>=0.0.7",
+    "loguru>=0.7.2",
 ]
 
 [project.optional-dependencies]
@@ -28,22 +30,28 @@ dev = [
 
 [tool.ruff]
 line-length = 120
-select = [
+lint.select = [
     "F", # pyflakes rules
     "E", # pycodestyle error rules
     "W", # pycodestyle warning rules
     "B", # flake8-bugbear rules
     "I", # isort rules
 ]
-ignore = [
+lint.ignore = [
     "E501", # line-too-long
 ]
+
+target-version = "py311"
+extend-exclude = ["tests/*", "notebooks/*"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["power_consumption"]
 
 [tool.ruff.format]
 indent-style = "space"
 
 [tool.setuptools]
-packages = ["churn"]
+packages = ["power_consumption"]
 
 [tool.setuptools.package-data]
-churn = ["**/*.py"]
+power_consumption = ["**/*.py"]
