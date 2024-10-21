@@ -48,3 +48,40 @@ uv lock
 - workaround was to run pyenv local 3.11.0 and then `uv venv -p 3.11.0`, but this lead to other issues:
     - Had issues with dependency resolution when using 3.11.0 (`pywin32` was being referenced for some reason? And it was not compatible with `mlflow >= 2.16.0`)
 ---
+
+---
+## 21/10/2024 - CI pipeline edits
+- added `uv pip install pre-commit` to the CI pipeline
+- added `uv run pre-commit run --all-files` to the CI pipeline
+
+- ```yaml
+    name: CI
+
+    on:
+    pull_request:
+        branches:
+        - main
+
+    jobs:
+    build_and_test:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v4
+
+        - name: Install uv
+            uses: astral-sh/setup-uv@v3
+
+        - name: Set up Python
+            run: |
+            uv python install 3.11
+            uv venv -p 3.11
+
+        - name: Install the dependencies
+            run: uv sync
+
+        - name: Run pre-commit checks
+            run: |
+            uv pip install pre-commit
+            uv run pre-commit run --all-files
+  ```
+---
