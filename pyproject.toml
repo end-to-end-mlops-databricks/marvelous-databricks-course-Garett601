@@ -26,6 +26,9 @@ dev = [
     "databricks-sdk>=0.32.0, <0.33",
     "ipykernel>=6.29.5, <7",
     "pip>=24.2",
+    "pytest>=8.3.3",
+    "pytest-mock>=3.14.0",
+    "pytest-sugar>=1.0.0",
 ]
 
 [tool.ruff]
@@ -55,3 +58,6 @@ packages = ["power_consumption"]
 
 [tool.setuptools.package-data]
 power_consumption = ["**/*.py"]
+
+[tool.uv]
+dev-dependencies = ["pytest-cov>=5.0.0"]
