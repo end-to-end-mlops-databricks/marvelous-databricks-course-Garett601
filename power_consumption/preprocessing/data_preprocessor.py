@@ -1,5 +1,6 @@
 """Data preprocessing module for the power consumption dataset."""
 
+import os
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
@@ -50,6 +51,8 @@ class DataProcessor:
             logger.warning(f"Failed to load data from UCI ML Repository: {e}")
             logger.info("Attempting to load data from local CSV file")
             csv_path = "../data/Tetuan City power consumption.csv"
+            if not os.path.exists(csv_path):
+                csv_path = "./data/Tetuan City power consumption.csv"
             try:
                 self.data = pd.read_csv(csv_path)
                 logger.info(f"Successfully loaded data from {csv_path}")
