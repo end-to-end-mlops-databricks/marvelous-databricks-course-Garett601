@@ -11,6 +11,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from ucimlrepo import fetch_ucirepo
 
+from power_consumption.schemas.processed_data import PowerConsumptionSchema
+
 
 class DataProcessor:
     def __init__(self, dataset_id: int, config: Dict[str, Any]):
@@ -59,7 +61,7 @@ class DataProcessor:
 
     def _clean_column_names(self) -> None:
         """Clean column names by joining split words."""
-        self.data.columns = [" ".join(col.split()) for col in self.data.columns]
+        self.data.columns = ["_".join(col.split()) for col in self.data.columns]
 
     def create_preprocessor(self) -> ColumnTransformer:
         """
@@ -119,6 +121,7 @@ class DataProcessor:
         self.data = self.data.sort_index()
 
         self.create_preprocessor()
+        self.data = PowerConsumptionSchema.validate(self.data)
 
     def split_data(self, test_size: float = 0.2) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """

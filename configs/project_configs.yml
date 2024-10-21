@@ -9,18 +9,18 @@ parameters:
 num_features:
   - Temperature
   - Humidity
-  - Wind Speed
+  - Wind_Speed
   - Hour
   - Day
   - Month
-  - general diffuse flows
-  - diffuse flows
+  - general_diffuse_flows
+  - diffuse_flows
 
 cat_features:
   - DayOfWeek
   - IsWeekend
 
 target:
-  - Zone 1 Power Consumption
-  - Zone 2 Power Consumption
-  - Zone 3 Power Consumption
+  - Zone_1_Power_Consumption
+  - Zone_2_Power_Consumption
+  - Zone_3_Power_Consumption
