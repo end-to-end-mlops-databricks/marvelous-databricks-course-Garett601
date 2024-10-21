@@ -27,7 +27,7 @@ def test_load_config():
     assert loaded_config["parameters"]["max_depth"] == 6
     assert "Temperature" in loaded_config["num_features"]
     assert "DayOfWeek" in loaded_config["cat_features"]
-    assert "Zone 1 Power Consumption" in loaded_config["target"]
+    assert "Zone_1_Power_Consumption" in loaded_config["target"]
 
 
 @pytest.mark.parametrize("n_targets", [1, 3])

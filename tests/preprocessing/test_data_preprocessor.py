@@ -10,12 +10,12 @@ def sample_data():
         'DateTime': date_range,
         'Temperature': np.random.uniform(0, 30, len(date_range)),
         'Humidity': np.random.uniform(30, 90, len(date_range)),
-        'Wind Speed': np.random.uniform(0, 20, len(date_range)),
-        'general diffuse flows': np.random.uniform(0, 100, len(date_range)),
-        'diffuse flows': np.random.uniform(0, 100, len(date_range)),
-        'Zone 1 Power Consumption': np.random.uniform(100, 500, len(date_range)),
-        'Zone 2 Power Consumption': np.random.uniform(100, 500, len(date_range)),
-        'Zone 3 Power Consumption': np.random.uniform(100, 500, len(date_range)),
+        'Wind_Speed': np.random.uniform(0, 20, len(date_range)),
+        'general_diffuse_flows': np.random.uniform(0, 100, len(date_range)),
+        'diffuse_flows': np.random.uniform(0, 100, len(date_range)),
+        'Zone_1_Power_Consumption': np.random.uniform(100, 500, len(date_range)),
+        'Zone_2_Power_Consumption': np.random.uniform(100, 500, len(date_range)),
+        'Zone_3_Power_Consumption': np.random.uniform(100, 500, len(date_range)),
     }
     return pd.DataFrame(data)
 
@@ -55,8 +55,8 @@ def test_load_data_fallback(project_config, mocker):
     assert processor.data.equals(pd.DataFrame({'B': [4, 5, 6]}))
 
 def test_clean_column_names(data_processor_with_data):
-    assert 'Zone 2 Power Consumption' in data_processor_with_data.data.columns
-    assert 'Zone 3 Power Consumption' in data_processor_with_data.data.columns
+    assert 'Zone_2_Power_Consumption' in data_processor_with_data.data.columns
+    assert 'Zone_3_Power_Consumption' in data_processor_with_data.data.columns
 
 def test_create_preprocessor(data_processor):
     preprocessor = data_processor.create_preprocessor()
