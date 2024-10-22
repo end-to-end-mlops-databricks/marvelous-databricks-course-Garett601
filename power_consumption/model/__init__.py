@@ -1,3 +1,3 @@
-from .main import ConsumptionModel
+from .rf_model import ConsumptionModel
 
 __all__ = ["ConsumptionModel"]

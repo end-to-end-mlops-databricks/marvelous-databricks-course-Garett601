@@ -4,7 +4,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
-from power_consumption.model.main import ConsumptionModel
+from power_consumption.model import ConsumptionModel
 
 @pytest.fixture
 def sample_data():
