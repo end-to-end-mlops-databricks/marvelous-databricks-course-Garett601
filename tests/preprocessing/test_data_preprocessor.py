@@ -6,7 +6,7 @@ from power_consumption.preprocessing.data_preprocessor import DataProcessor
 
 @pytest.fixture
 def sample_data():
-    date_range = pd.date_range(start="2023-01-01", end="2023-01-10", freq="H")
+    date_range = pd.date_range(start="2023-01-01", end="2023-01-10", freq="h")
     data = {
         "DateTime": date_range,
         "Temperature": np.random.uniform(0, 30, len(date_range)),
