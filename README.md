@@ -53,6 +53,8 @@ uv lock
 ## 21/10/2024 - CI pipeline edits
 - added `uv pip install pre-commit` to the CI pipeline
 - added `uv run pre-commit run --all-files` to the CI pipeline
+- added `uv pip install pytest pytest-mock pytest-cov` to the CI pipeline
+- added `uv run pytest --cov=power_consumption tests/` to the CI pipeline
 
 - ```yaml
     name: CI
@@ -83,5 +85,14 @@ uv lock
             run: |
             uv pip install pre-commit
             uv run pre-commit run --all-files
+
+      - name: Run tests with coverage
+        run: |
+          uv pip install pytest pytest-mock pytest-cov
+          uv run pytest --cov=power_consumption tests/
   ```
+
+## Dataset
+- The dataset is not included in the repository to avoid large file size. It should first attempt to get the data from the UCI ML Repository.
+- If that fails, the dataset is expected to be in `data/Tetuan City power consumption.csv`. You can download it from [here](https://www.kaggle.com/datasets/gmkeshav/tetuan-city-power-consumption).
 ---
