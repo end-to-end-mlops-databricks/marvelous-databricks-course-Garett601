@@ -24,3 +24,8 @@ jobs:
         run: |
           uv pip install pre-commit
           uv run pre-commit run --all-files
+
+      - name: Run tests with coverage
+        run: |
+          uv pip install pytest pytest-cov
+          uv run pytest --cov=power_consumption tests/
