@@ -27,5 +27,5 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          uv pip install pytest pytest-cov
+          uv pip install pytest pytest-mock pytest-cov
           uv run pytest --cov=power_consumption tests/
