@@ -8,26 +8,11 @@ import pandas as pd
 import pytest
 
 from power_consumption.utils import (
-    load_config,
     visualise_results,
     plot_actual_vs_predicted,
     plot_feature_importance,
 )
 
-
-def test_load_config():
-    conftest_path = Path(__file__).parent / "conftest.yml"
-
-    loaded_config = load_config(conftest_path)
-
-    assert loaded_config["catalog_name"] == "heiaepgah71pwedmld01001"
-    assert loaded_config["schema_name"] == "power_consumption"
-    assert loaded_config["parameters"]["learning_rate"] == 0.01
-    assert loaded_config["parameters"]["n_estimators"] == 1000
-    assert loaded_config["parameters"]["max_depth"] == 6
-    assert "Temperature" in loaded_config["num_features"]
-    assert "DayOfWeek" in loaded_config["cat_features"]
-    assert "Zone_1_Power_Consumption" in loaded_config["target"]
 
 
 @pytest.mark.parametrize("n_targets", [1, 3])

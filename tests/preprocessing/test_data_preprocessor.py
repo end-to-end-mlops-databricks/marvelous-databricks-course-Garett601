@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import pytest
 from power_consumption.preprocessing.data_preprocessor import DataProcessor
+from power_consumption.config import Config
 
 
 @pytest.fixture
@@ -97,9 +98,9 @@ def test_split_data(data_processor_with_data):
     assert len(X_train) > len(X_test)
     assert len(y_train) > len(y_test)
     assert X_train.shape[1] == len(
-        data_processor_with_data.config["num_features"]
-    ) + len(data_processor_with_data.config["cat_features"])
-    assert y_train.shape[1] == len(data_processor_with_data.config["target"])
+        data_processor_with_data.config.features.num_features
+    ) + len(data_processor_with_data.config.features.cat_features)
+    assert y_train.shape[1] == len(data_processor_with_data.config.target.target)
 
 
 def test_fit_transform_features(data_processor_with_data):
