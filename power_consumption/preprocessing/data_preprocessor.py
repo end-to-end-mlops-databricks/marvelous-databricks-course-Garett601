@@ -16,7 +16,7 @@ from power_consumption.schemas.processed_data import PowerConsumptionSchema
 
 
 class DataProcessor:
-    def __init__(self, dataset_id: int, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any]):
         """
         Initialise the DataProcessor.
         """
@@ -25,9 +25,9 @@ class DataProcessor:
         self.y: Optional[pd.DataFrame] = None
         self.config: Dict[str, Any] = config
         self.preprocessor: Optional[ColumnTransformer] = None
-        self.load_data(dataset_id)
+        self.load_data()
 
-    def load_data(self, dataset_id: int) -> None:
+    def load_data(self) -> None:
         """
         Load the dataset from UCI ML Repository or local CSV file.
 
@@ -41,6 +41,7 @@ class DataProcessor:
         If loading from UCI ML Repository fails, the method will attempt to load
         the data from '../data/Tetuan City power consumption.csv'.
         """
+        dataset_id = self.config["dataset"]["id"]
         try:
             dataset = fetch_ucirepo(id=dataset_id)
             logger.info(
