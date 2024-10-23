@@ -1094,13 +1094,9 @@ dev = [
     { name = "ipykernel" },
     { name = "pip" },
     { name = "pytest" },
+    { name = "pytest-cov" },
     { name = "pytest-mock" },
     { name = "pytest-sugar" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest-cov" },
 ]
 
 [package.metadata]
@@ -1121,15 +1117,13 @@ requires-dist = [
     { name = "pip", marker = "extra == 'dev'", specifier = ">=24.2" },
     { name = "pyarrow", specifier = ">=15.0.2,<16" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
     { name = "pytest-sugar", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "scikit-learn", specifier = ">=1.5.1,<2" },
     { name = "scipy", specifier = ">=1.14.1,<2" },
     { name = "ucimlrepo", specifier = ">=0.0.7" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest-cov", specifier = ">=5.0.0" }]
 
 [[package]]
 name = "multimethod"

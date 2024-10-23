@@ -1,7 +1,7 @@
 [project]
-name = "mlops-with-databricks"
+name = "power-consumption"
 version = "0.0.1"
-description = "MLOps with Databricks"
+description = "MLOps with Databricks Course Project"
 readme = "README.md"
 requires-python = ">=3.11, <3.12"
 dependencies = [
@@ -30,6 +30,7 @@ dev = [
     "pytest>=8.3.3",
     "pytest-mock>=3.14.0",
     "pytest-sugar>=1.0.0",
+    "pytest-cov>=5.0.0",
 ]
 
 [tool.ruff]
@@ -59,6 +60,3 @@ packages = ["power_consumption"]
 
 [tool.setuptools.package-data]
 power_consumption = ["**/*.py"]
-
-[tool.uv]
-dev-dependencies = ["pytest-cov>=5.0.0"]
