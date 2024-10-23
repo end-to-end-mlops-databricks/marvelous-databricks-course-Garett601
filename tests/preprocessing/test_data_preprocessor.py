@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import pytest
 from power_consumption.preprocessing.data_preprocessor import DataProcessor
-from power_consumption.config import Config
 from pathlib import Path
 
 
