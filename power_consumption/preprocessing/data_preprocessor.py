@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import os
+from pathlib import Path
 from typing import Optional, Tuple
 
 import numpy as np
@@ -34,15 +34,21 @@ class DataProcessor:
         """
         Load the dataset from UCI ML Repository or local CSV file.
 
-        Parameters
-        ----------
-        dataset_id : int
-            The ID of the dataset to fetch from UCI ML Repository.
+        This method attempts to load the dataset from the UCI ML Repository using the dataset ID
+        specified in the configuration. If that fails, it falls back to loading from a local CSV file.
+
+        The dataset ID is obtained from the configuration (self.config.dataset.id).
 
         Notes
         -----
         If loading from UCI ML Repository fails, the method will attempt to load
-        the data from '../data/Tetuan City power consumption.csv'.
+        the data from '../data/Tetuan City power consumption.csv' or
+        './data/Tetuan City power consumption.csv'.
+
+        Raises
+        ------
+        Exception
+            If both UCI ML Repository fetch and local CSV file loading fail.
         """
         dataset_id = self.config.dataset.id
         try:
@@ -54,12 +60,19 @@ class DataProcessor:
         except Exception as e:
             logger.warning(f"Failed to load data from UCI ML Repository: {e}")
             logger.info("Attempting to load data from local CSV file")
-            csv_path = "../data/Tetuan City power consumption.csv"
-            if not os.path.exists(csv_path):
-                csv_path = "./data/Tetuan City power consumption.csv"
+            data_dir = Path(__file__).resolve().parents[2] / "data"
+            csv_filename = "Tetuan City power consumption.csv"
+            csv_path = data_dir / csv_filename
+
+            if not csv_path.exists():
+                csv_path = Path.cwd() / "data" / csv_filename
+
             try:
                 self.data = pd.read_csv(csv_path)
                 logger.info(f"Successfully loaded data from {csv_path}")
+            except FileNotFoundError:
+                logger.error(f"CSV file not found at {csv_path}")
+                raise
             except Exception as e:
                 logger.error(f"Failed to load data from {csv_path}: {e}")
                 raise

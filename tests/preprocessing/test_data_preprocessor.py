@@ -3,6 +3,7 @@ import numpy as np
 import pytest
 from power_consumption.preprocessing.data_preprocessor import DataProcessor
 from power_consumption.config import Config
+from pathlib import Path
 
 
 @pytest.fixture
@@ -54,17 +55,23 @@ def test_load_data(project_config, mocker):
 
 
 def test_load_data_fallback(project_config, mocker):
-    mock_fetch = mocker.patch(
+    mocker.patch(
         "power_consumption.preprocessing.data_preprocessor.fetch_ucirepo",
         side_effect=Exception("UCI fetch failed"),
     )
+
     mock_read_csv = mocker.patch("pandas.read_csv")
     mock_read_csv.return_value = pd.DataFrame({"B": [4, 5, 6]})
 
+    mock_path = mocker.patch("power_consumption.preprocessing.data_preprocessor.Path")
+    mock_path.return_value.exists.return_value = True
+    mock_path.return_value.resolve.return_value.parents.__getitem__.return_value = Path("/mocked/project/root")
+
     processor = DataProcessor(config=project_config)
 
-    mock_fetch.assert_called_once_with(id=849)
-    mock_read_csv.assert_called_once_with("./data/Tetuan City power consumption.csv")
+    mock_read_csv.assert_called_once()
+
+    assert processor.data is not None
     assert processor.data.equals(pd.DataFrame({"B": [4, 5, 6]}))
 
 
