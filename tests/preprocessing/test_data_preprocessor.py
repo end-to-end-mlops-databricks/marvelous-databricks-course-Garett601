@@ -120,3 +120,71 @@ def test_fit_transform_features(data_processor_with_data):
     assert isinstance(X_test_transformed, np.ndarray)
     assert X_train_transformed.shape[0] == X_train.shape[0]
     assert X_test_transformed.shape[0] == X_test.shape[0]
+
+
+@pytest.fixture
+def mock_uci_fetch_fail(mocker):
+    return mocker.patch(
+        "power_consumption.preprocessing.data_preprocessor.fetch_ucirepo",
+        side_effect=Exception("UCI fetch failed"),
+    )
+
+@pytest.fixture
+def mock_logger(mocker):
+    return mocker.patch("power_consumption.preprocessing.data_preprocessor.logger")
+
+@pytest.fixture
+def mock_read_csv(mocker):
+    mock = mocker.patch("pandas.read_csv")
+    mock.return_value = pd.DataFrame({"B": [4, 5, 6]})
+    return mock
+
+@pytest.fixture
+def mock_path(mocker):
+    mock = mocker.patch("power_consumption.preprocessing.data_preprocessor.Path")
+    mock.return_value.resolve.return_value.parents.__getitem__.return_value = Path("/mocked/project/root")
+    return mock
+
+def test_load_data_fallback_csv_exists(project_config, mock_uci_fetch_fail, mock_logger, mock_read_csv, mock_path):
+    mock_path.return_value.exists.return_value = True
+
+    processor = DataProcessor(config=project_config)
+
+    mock_read_csv.assert_called_once()
+    assert processor.data is not None
+    assert processor.data.equals(pd.DataFrame({"B": [4, 5, 6]}))
+    mock_logger.warning.assert_called_once()
+    mock_logger.info.assert_called()
+
+def test_load_data_fallback_csv_in_cwd(project_config, mock_uci_fetch_fail, mock_logger, mock_read_csv, mock_path):
+    mock_path.return_value.exists.side_effect = [False, True]
+
+    processor = DataProcessor(config=project_config)
+
+    mock_read_csv.assert_called_once()
+    assert processor.data is not None
+    assert processor.data.equals(pd.DataFrame({"B": [4, 5, 6]}))
+    mock_logger.warning.assert_called_once()
+    mock_logger.info.assert_called()
+
+def test_load_data_fallback_csv_not_found(project_config, mock_uci_fetch_fail, mock_logger, mock_read_csv, mock_path, mocker):
+    mock_path.return_value.exists.return_value = False
+    mock_read_csv.side_effect = FileNotFoundError("CSV file not found")
+
+    with pytest.raises(FileNotFoundError):
+        DataProcessor(config=project_config)
+
+    mock_logger.warning.assert_called_once()
+    mock_logger.info.assert_called_once()
+    mock_logger.error.assert_called_once_with(mocker.ANY)
+
+def test_load_data_fallback_csv_read_error(project_config, mock_uci_fetch_fail, mock_logger, mock_read_csv, mock_path, mocker):
+    mock_path.return_value.exists.return_value = True
+    mock_read_csv.side_effect = Exception("Error reading CSV")
+
+    with pytest.raises(Exception):
+        DataProcessor(config=project_config)
+
+    mock_logger.warning.assert_called_once()
+    mock_logger.info.assert_called_once()
+    mock_logger.error.assert_called_once_with(mocker.ANY)
