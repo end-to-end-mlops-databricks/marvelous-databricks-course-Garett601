@@ -1,7 +1,9 @@
 """Data preprocessing module for the power consumption dataset."""
 
+from __future__ import annotations
+
 import os
-from typing import Any, Dict, Optional, Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -12,18 +14,19 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from ucimlrepo import fetch_ucirepo
 
+from power_consumption.config import Config
 from power_consumption.schemas.processed_data import PowerConsumptionSchema
 
 
 class DataProcessor:
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Config):
         """
         Initialise the DataProcessor.
         """
         self.data: Optional[pd.DataFrame] = None
         self.X: Optional[pd.DataFrame] = None
         self.y: Optional[pd.DataFrame] = None
-        self.config: Dict[str, Any] = config
+        self.config: Config = config
         self.preprocessor: Optional[ColumnTransformer] = None
         self.load_data()
 
@@ -41,7 +44,7 @@ class DataProcessor:
         If loading from UCI ML Repository fails, the method will attempt to load
         the data from '../data/Tetuan City power consumption.csv'.
         """
-        dataset_id = self.config["dataset"]["id"]
+        dataset_id = self.config.dataset.id
         try:
             dataset = fetch_ucirepo(id=dataset_id)
             logger.info(
@@ -76,8 +79,8 @@ class DataProcessor:
         ColumnTransformer
             The preprocessing pipeline.
         """
-        numeric_features = self.config["num_features"]
-        categorical_features = self.config["cat_features"]
+        numeric_features = self.config.features.num_features
+        categorical_features = self.config.features.cat_features
 
         logger.info(f"Numeric features: {numeric_features}")
         logger.info(f"Categorical features: {categorical_features}")
@@ -141,8 +144,8 @@ class DataProcessor:
         tuple of pd.DataFrame
             X_train, X_test, y_train, y_test
         """
-        target_columns = self.config["target"]
-        feature_columns = self.config["num_features"] + self.config["cat_features"]
+        target_columns = self.config.target.target
+        feature_columns = self.config.features.num_features + self.config.features.cat_features
 
         X = self.data[feature_columns]
         y = self.data[target_columns]

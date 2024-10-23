@@ -1,30 +1,7 @@
 """Utility functions for the power consumption project."""
 
-from typing import Any, Dict
-
 import matplotlib.pyplot as plt
 import numpy as np
-import yaml
-from loguru import logger
-
-
-def load_config(config_path: str) -> Dict[str, Any]:
-    """
-    Load configuration from a YAML file.
-
-    Parameters
-    ----------
-    config_path : str
-        Path to the configuration YAML file.
-
-    Returns
-    -------
-    Dict[str, Any]
-        Configuration dictionary.
-    """
-    logger.info(f"Loading configuration from {config_path}")
-    with open(config_path, "r") as file:
-        return yaml.safe_load(file)
 
 
 def visualise_results(y_test, y_pred, target_names):

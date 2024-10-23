@@ -2,7 +2,7 @@
 Main module for the power consumption model.
 """
 
-from typing import Dict, Self, Tuple
+from typing import Self, Tuple
 
 import numpy as np
 from sklearn.compose import ColumnTransformer
@@ -10,6 +10,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.pipeline import Pipeline
+
+from power_consumption.config import Config
 
 
 class ConsumptionModel:
@@ -31,7 +33,7 @@ class ConsumptionModel:
         The complete model pipeline including preprocessing and regression steps.
     """
 
-    def __init__(self, preprocessor: ColumnTransformer, config: Dict) -> None:
+    def __init__(self, preprocessor: ColumnTransformer, config: Config) -> None:
         """
         Initialise the ConsumptionModel.
         """
@@ -43,8 +45,8 @@ class ConsumptionModel:
                     "regressor",
                     MultiOutputRegressor(
                         RandomForestRegressor(
-                            n_estimators=config["parameters"]["n_estimators"],
-                            max_depth=config["parameters"]["max_depth"],
+                            n_estimators=config.hyperparameters.n_estimators,
+                            max_depth=config.hyperparameters.max_depth,
                             random_state=42,
                         )
                     ),
