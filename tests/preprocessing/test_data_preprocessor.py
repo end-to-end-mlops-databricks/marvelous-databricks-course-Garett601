@@ -26,7 +26,7 @@ def data_processor(project_config, mocker):
     mocker.patch(
         "power_consumption.preprocessing.data_preprocessor.DataProcessor.load_data"
     )
-    processor = DataProcessor(dataset_id=849, config=project_config)
+    processor = DataProcessor(config=project_config)
     return processor
 
 
@@ -46,7 +46,7 @@ def test_load_data(project_config, mocker):
     mock_dataset.metadata.name = "Test Dataset"
     mock_fetch.return_value = mock_dataset
 
-    processor = DataProcessor(dataset_id=849, config=project_config)
+    processor = DataProcessor(config=project_config)
 
     mock_fetch.assert_called_once_with(id=849)
     assert processor.data.equals(pd.DataFrame({"A": [1, 2, 3]}))
@@ -60,9 +60,9 @@ def test_load_data_fallback(project_config, mocker):
     mock_read_csv = mocker.patch("pandas.read_csv")
     mock_read_csv.return_value = pd.DataFrame({"B": [4, 5, 6]})
 
-    processor = DataProcessor(dataset_id=1, config=project_config)
+    processor = DataProcessor(config=project_config)
 
-    mock_fetch.assert_called_once_with(id=1)
+    mock_fetch.assert_called_once_with(id=849)
     mock_read_csv.assert_called_once_with("./data/Tetuan City power consumption.csv")
     assert processor.data.equals(pd.DataFrame({"B": [4, 5, 6]}))
 
