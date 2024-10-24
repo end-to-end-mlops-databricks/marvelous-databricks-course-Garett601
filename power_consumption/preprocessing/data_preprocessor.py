@@ -5,7 +5,9 @@ from __future__ import annotations
 from typing import Tuple
 
 import pandas as pd
+import pyspark.sql.functions as F
 from loguru import logger
+from pyspark.sql import SparkSession
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
@@ -130,3 +132,27 @@ class DataProcessor:
         logger.info(f"Test set date range: {test_set.index.min()} to {test_set.index.max()}")
 
         return train_set, test_set
+
+    def save_to_catalog(self, train_set: pd.DataFrame, test_set: pd.DataFrame, spark: SparkSession) -> None:
+        timestamp = F.to_utc_timestamp(F.current_timestamp(), "UTC")
+        train_set_with_timestamp = spark.createDataFrame(train_set).withColumn("update_timestamp_utc", timestamp)
+
+        test_set_with_timestamp = spark.createDataFrame(test_set).withColumn("update_timestamp_utc", timestamp)
+
+        train_set_with_timestamp.write.mode("append").saveAsTable(
+            f"{self.config.catalog_name}.{self.config.schema_name}.train_set"
+        )
+
+        test_set_with_timestamp.write.mode("append").saveAsTable(
+            f"{self.config.catalog_name}.{self.config.schema_name}.test_set"
+        )
+
+        spark.sql(
+            f"ALTER TABLE {self.config.catalog_name}.{self.config.schema_name}.train_set "
+            "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+        )
+
+        spark.sql(
+            f"ALTER TABLE {self.config.catalog_name}.{self.config.schema_name}.test_set "
+            "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+        )
