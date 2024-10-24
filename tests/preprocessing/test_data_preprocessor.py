@@ -3,6 +3,8 @@ import numpy as np
 import pytest
 from power_consumption.preprocessing.data_preprocessor import DataProcessor
 from power_consumption.schemas.processed_data import ProcessedPowerConsumptionSchema
+from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
 
 
 @pytest.fixture
@@ -47,6 +49,27 @@ def data_processor(project_config, sample_data):
         An instance of DataProcessor initialized with sample data.
     """
     return DataProcessor(config=project_config, data=sample_data)
+
+@pytest.fixture
+def mock_spark_session(mocker):
+    """
+    Create a mock SparkSession for testing.
+
+    Parameters
+    ----------
+    mocker : pytest_mock.MockFixture
+        The pytest mocker fixture.
+
+    Returns
+    -------
+    mocker.Mock
+        A mock SparkSession object.
+    """
+    mock_spark = mocker.Mock(spec=SparkSession)
+    mock_dataframe = mocker.Mock()
+    mock_dataframe.withColumn.return_value = mock_dataframe
+    mock_spark.createDataFrame.return_value = mock_dataframe
+    return mock_spark
 
 def test_clean_column_names(data_processor):
     """
@@ -114,3 +137,32 @@ def test_split_data(data_processor):
         ProcessedPowerConsumptionSchema.validate(test_set)
     except Exception as e:
         pytest.fail(f"Schema validation failed: {str(e)}")
+
+def test_save_to_catalog(data_processor, mock_spark_session, mocker):
+    data_processor.preprocess_data()
+    train_set, test_set = data_processor.split_data(test_size=0.2)
+
+    mocker.patch('pyspark.sql.functions.current_timestamp', return_value=F.lit("2024-10-24T13:29:49.272+00:00"))
+    data_processor.save_to_catalog(train_set, test_set, mock_spark_session)
+
+    # Assert that createDataFrame was called twice (once for train_set, once for test_set)
+    assert mock_spark_session.createDataFrame.call_count == 2
+
+    # Assert that write.mode("append").saveAsTable was called twice
+    mock_dataframe = mock_spark_session.createDataFrame.return_value
+    assert mock_dataframe.write.mode.call_count == 2
+    mock_dataframe.write.mode.assert_called_with("append")
+    assert mock_dataframe.write.mode.return_value.saveAsTable.call_count == 2
+
+    # Assert that SQL statements for enabling change data feed were executed
+    expected_sql_calls = [
+        mocker.call(
+            f"ALTER TABLE {data_processor.config.catalog_name}.{data_processor.config.schema_name}.train_set "
+            "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+        ),
+        mocker.call(
+            f"ALTER TABLE {data_processor.config.catalog_name}.{data_processor.config.schema_name}.test_set "
+            "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+        )
+    ]
+    mock_spark_session.sql.assert_has_calls(expected_sql_calls, any_order=True)
