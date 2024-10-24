@@ -6,7 +6,34 @@ hyperparameters:
   n_estimators: 1000
   max_depth: 6
 
-features:
+processed_features:
+  num_features:
+    - Temperature
+    - Humidity
+    - Wind_Speed
+    - Hour
+    - Day
+    - Month
+    - general_diffuse_flows
+    - diffuse_flows
+
+  cat_features:
+    - DayOfWeek_1
+    - DayOfWeek_2
+    - DayOfWeek_3
+    - DayOfWeek_4
+    - DayOfWeek_5
+    - DayOfWeek_6
+    - IsWeekend_1
+
+target:
+  target:
+    - Zone_1_Power_Consumption
+    - Zone_2_Power_Consumption
+    - Zone_3_Power_Consumption
+
+dataset:
+  raw_data_table: tetuan_city_power_consumption
   num_features:
     - Temperature
     - Humidity
@@ -20,12 +47,3 @@ features:
   cat_features:
     - DayOfWeek
     - IsWeekend
-
-target:
-  target:
-    - Zone_1_Power_Consumption
-    - Zone_2_Power_Consumption
-    - Zone_3_Power_Consumption
-
-dataset:
-  id: 849
