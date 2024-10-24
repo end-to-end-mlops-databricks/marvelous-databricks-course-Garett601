@@ -134,6 +134,22 @@ class DataProcessor:
         return train_set, test_set
 
     def save_to_catalog(self, train_set: pd.DataFrame, test_set: pd.DataFrame, spark: SparkSession) -> None:
+        """
+        Save the training and test sets to the catalog with a timestamp and enable change data feed.
+
+        Parameters
+        ----------
+        train_set : pd.DataFrame
+            The training set to be saved.
+        test_set : pd.DataFrame
+            The test set to be saved.
+        spark : SparkSession
+            The SparkSession to use for saving the data.
+
+        Returns
+        -------
+        None
+        """
         timestamp = F.to_utc_timestamp(F.current_timestamp(), "UTC")
         train_set_with_timestamp = spark.createDataFrame(train_set).withColumn("update_timestamp_utc", timestamp)
 
