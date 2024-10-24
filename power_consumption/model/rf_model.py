@@ -2,14 +2,13 @@
 Main module for the power consumption model.
 """
 
-from typing import Self, Tuple
+from typing import List, Self, Tuple
 
 import numpy as np
-from sklearn.compose import ColumnTransformer
+import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.multioutput import MultiOutputRegressor
-from sklearn.pipeline import Pipeline
 
 from power_consumption.config import Config
 
@@ -20,49 +19,39 @@ class ConsumptionModel:
 
     Parameters
     ----------
-    preprocessor : ColumnTransformer
-        The preprocessor pipeline for feature transformation.
-    config : Dict
-        Configuration dictionary containing model parameters.
+    config : Config
+        Configuration object containing model parameters.
 
     Attributes
     ----------
-    config : Dict
-        Configuration dictionary.
-    model : Pipeline
-        The complete model pipeline including preprocessing and regression steps.
+    config : Config
+        Configuration object.
+    model : MultiOutputRegressor
+        The complete model pipeline including regression steps.
     """
 
-    def __init__(self, preprocessor: ColumnTransformer, config: Config) -> None:
+    def __init__(self, config: Config) -> None:
         """
         Initialise the ConsumptionModel.
         """
         self.config = config
-        self.model = Pipeline(
-            steps=[
-                ("preprocessor", preprocessor),
-                (
-                    "regressor",
-                    MultiOutputRegressor(
-                        RandomForestRegressor(
-                            n_estimators=config.hyperparameters.n_estimators,
-                            max_depth=config.hyperparameters.max_depth,
-                            random_state=42,
-                        )
-                    ),
-                ),
-            ]
+        self.model = MultiOutputRegressor(
+            RandomForestRegressor(
+                n_estimators=config.hyperparameters.n_estimators,
+                max_depth=config.hyperparameters.max_depth,
+                random_state=42,
+            )
         )
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray) -> Self:
+    def train(self, X_train: pd.DataFrame, y_train: pd.DataFrame) -> Self:
         """
         Train the model on the given data.
 
         Parameters
         ----------
-        X_train : np.ndarray
+        X_train : pd.DataFrame
             Training feature matrix.
-        y_train : np.ndarray
+        y_train : pd.DataFrame
             Training target matrix.
 
         Returns
@@ -73,13 +62,13 @@ class ConsumptionModel:
         self.model.fit(X_train, y_train)
         return self
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
         """
         Make predictions using the trained model.
 
         Parameters
         ----------
-        X : np.ndarray
+        X : pd.DataFrame
             Feature matrix for prediction.
 
         Returns
@@ -89,15 +78,15 @@ class ConsumptionModel:
         """
         return self.model.predict(X)
 
-    def evaluate(self, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def evaluate(self, X_test: pd.DataFrame, y_test: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
         """
         Evaluate the model performance.
 
         Parameters
         ----------
-        X_test : np.ndarray
+        X_test : pd.DataFrame
             Test feature matrix.
-        y_test : np.ndarray
+        y_test : pd.DataFrame
             True target values.
 
         Returns
@@ -110,17 +99,15 @@ class ConsumptionModel:
         r2 = r2_score(y_test, y_pred, multioutput="raw_values")
         return mse, r2
 
-    def get_feature_importance(self) -> Tuple[np.ndarray, np.ndarray]:
+    def get_feature_importance(self) -> Tuple[np.ndarray, List[str]]:
         """
         Get feature importances from the trained model.
 
         Returns
         -------
-        Tuple[np.ndarray, np.ndarray]
+        Tuple[np.ndarray, List[str]]
             Feature importances and corresponding feature names.
         """
-        feature_importance = np.mean(
-            [estimator.feature_importances_ for estimator in self.model.named_steps["regressor"].estimators_], axis=0
-        )
-        feature_names = self.model.named_steps["preprocessor"].get_feature_names_out()
+        feature_importance = np.mean([estimator.feature_importances_ for estimator in self.model.estimators_], axis=0)
+        feature_names = self.config.processed_features.num_features + self.config.processed_features.cat_features
         return feature_importance, feature_names
