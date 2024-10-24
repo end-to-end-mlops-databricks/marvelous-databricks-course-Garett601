@@ -1,0 +1,31 @@
+catalog_name: heiaepgah71pwedmld01001
+schema_name: power_consumption
+
+hyperparameters:
+  learning_rate: 0.01
+  n_estimators: 1000
+  max_depth: 6
+
+features:
+  num_features:
+    - Temperature
+    - Humidity
+    - Wind_Speed
+    - Hour
+    - Day
+    - Month
+    - general_diffuse_flows
+    - diffuse_flows
+
+  cat_features:
+    - DayOfWeek
+    - IsWeekend
+
+target:
+  target:
+    - Zone_1_Power_Consumption
+    - Zone_2_Power_Consumption
+    - Zone_3_Power_Consumption
+
+dataset:
+  id: 849
