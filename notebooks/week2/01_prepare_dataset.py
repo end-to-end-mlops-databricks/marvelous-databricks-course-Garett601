@@ -24,7 +24,9 @@ data_processor = DataProcessor(config, data_pandas)
 data_processor.preprocess_data()
 # COMMAND ----------
 train_set, test_set = data_processor.split_data()
-
+# COMMAND ----------
+train_set.reset_index(inplace=True)
+test_set.reset_index(inplace=True)
 # COMMAND ----------
 data_processor.save_to_catalog(train_set=train_set, test_set=test_set, spark=spark)
 # COMMAND ----------
