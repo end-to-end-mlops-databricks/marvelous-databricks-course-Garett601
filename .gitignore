@@ -98,3 +98,6 @@ dmypy.json
 
 .databricks
 .ruff_cache/
+
+# JSON files
+*.json
