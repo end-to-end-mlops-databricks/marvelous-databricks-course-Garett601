@@ -101,3 +101,6 @@ dmypy.json
 
 # JSON files
 *.json
+
+# MLFlow
+mlruns/
