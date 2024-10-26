@@ -142,7 +142,10 @@ def test_save_to_catalog(data_processor, mock_spark_session, mocker):
     data_processor.preprocess_data()
     train_set, test_set = data_processor.split_data(test_size=0.2)
 
-    mocker.patch('pyspark.sql.functions.current_timestamp', return_value=F.lit("2024-10-24T13:29:49.272+00:00"))
+    mock_lit = mocker.Mock()
+    mock_lit.return_value = "2024-10-24T13:29:49.272+00:00"
+    mocker.patch('pyspark.sql.functions.lit', mock_lit)
+    mocker.patch('pyspark.sql.functions.current_timestamp', return_value=mock_lit("2024-10-24T13:29:49.272+00:00"))
     data_processor.save_to_catalog(train_set, test_set, mock_spark_session)
 
     # Assert that createDataFrame was called twice (once for train_set, once for test_set)
