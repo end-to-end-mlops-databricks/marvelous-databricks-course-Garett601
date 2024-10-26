@@ -142,20 +142,39 @@ def test_save_to_catalog(data_processor, mock_spark_session, mocker):
     data_processor.preprocess_data()
     train_set, test_set = data_processor.split_data(test_size=0.2)
 
-    mock_lit = mocker.Mock()
-    mock_lit.return_value = "2024-10-24T13:29:49.272+00:00"
-    mocker.patch('pyspark.sql.functions.lit', mock_lit)
-    mocker.patch('pyspark.sql.functions.current_timestamp', return_value=mock_lit("2024-10-24T13:29:49.272+00:00"))
+    # Mock PySpark functions
+    mock_current_timestamp = mocker.Mock()
+    mock_to_utc_timestamp = mocker.Mock()
+
+    mocker.patch('pyspark.sql.functions.current_timestamp', mock_current_timestamp)
+    mocker.patch('pyspark.sql.functions.to_utc_timestamp', mock_to_utc_timestamp)
+
+    # Set up the mock chain for timestamp creation
+    mock_current_timestamp.return_value = "mocked_current_timestamp"
+    mock_to_utc_timestamp.return_value = "mocked_utc_timestamp"
+
+    # Mock SparkSession methods
+    mock_spark_df = mocker.Mock()
+    mock_spark_session.createDataFrame.return_value = mock_spark_df
+    mock_spark_df.withColumn.return_value = mock_spark_df
+    mock_spark_df.write.mode.return_value.saveAsTable = mocker.Mock()
+
     data_processor.save_to_catalog(train_set, test_set, mock_spark_session)
 
     # Assert that createDataFrame was called twice (once for train_set, once for test_set)
     assert mock_spark_session.createDataFrame.call_count == 2
 
     # Assert that write.mode("append").saveAsTable was called twice
-    mock_dataframe = mock_spark_session.createDataFrame.return_value
-    assert mock_dataframe.write.mode.call_count == 2
-    mock_dataframe.write.mode.assert_called_with("append")
-    assert mock_dataframe.write.mode.return_value.saveAsTable.call_count == 2
+    assert mock_spark_df.write.mode.call_count == 2
+    mock_spark_df.write.mode.assert_called_with("append")
+    assert mock_spark_df.write.mode.return_value.saveAsTable.call_count == 2
+
+    # Assert that the PySpark functions were called correctly
+    mock_current_timestamp.assert_called_once()
+    mock_to_utc_timestamp.assert_called_once_with("mocked_current_timestamp", "UTC")
+
+    # Assert that withColumn was called with the mocked timestamp
+    mock_spark_df.withColumn.assert_called_with("update_timestamp_utc", "mocked_utc_timestamp")
 
     # Assert that SQL statements for enabling change data feed were executed
     expected_sql_calls = [
