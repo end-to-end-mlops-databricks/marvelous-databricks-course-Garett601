@@ -28,5 +28,5 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          uv pip install pytest pytest-mock pytest-cov databricks-sdk
+          uv pip install pytest pytest-mock pytest-cov pyspark databricks-sdk
           uv run pytest --cov=power_consumption --cov-report=term-missing --cov-fail-under=70 tests/
