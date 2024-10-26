@@ -29,6 +29,10 @@ uv lock
 # Updates, Issues, Workarounds, Notes
 
 ---
+<h1 align="center">
+week 1
+</h1>
+
 ## 15/10/2024 - Workaround for environment setup
 > **Note**
 - loosened python-version in pyproject.toml to `requires-python = ">=3.11, <3.12"`
@@ -98,4 +102,52 @@ uv lock
 
 - The dataset is not included in the repository to avoid large file size. It should first attempt to get the data from the UCI ML Repository.
 - If that fails, the dataset is expected to be in `data/Tetuan City power consumption.csv`. You can download it from [here](https://www.kaggle.com/datasets/gmkeshav/tetuan-city-power-consumption).
+---
+---
+<h1 align="center">
+week 2
+</h1>
+
+## 26/10/2024 - Feature Engineering
+> **Note**
+- Dataset is now available in UC as table
+- updated DataPreprocessor and separated data loading and preprocessing
+
+> **Issue**
+- Feature Engineering was not working when running from within the IDE
+    ```shell
+    Exception: {'error_code': 'PERMISSION_DENIED', 'message': "Request failed access control checks. Permission check failed for 'heiaepgah71pwedmld01001.power_consumption.power_consumption_features'."}
+    ```
+- In example code, the features generated at runtime were not used in the fe model
+> **Workaround**
+- Ran the feature engineering notebook from Databricks workspace, this resolved permissions issues
+- Ran the feature engineering feature function on the training and testing set and included the new features in the fe model
+-   ```python
+    testing_set = fe.create_training_set(
+        df=test_set,
+        label=target,
+        feature_lookups=[
+            FeatureFunction(
+                udf_name=function_name,
+                output_name="weather_interaction",
+                input_bindings={
+                    "temperature": "Temperature",
+                    "humidity": "Humidity",
+                    "wind_speed": "Wind_Speed"
+                },
+            ),
+        ],
+        exclude_columns=["update_timestamp_utc"]
+    )
+    ```
+    ```python
+    training_df = training_set.load_df().toPandas()
+    testing_df = testing_set.load_df().toPandas()
+
+    X_train = training_df[num_features + cat_features + ["weather_interaction"]]
+    y_train = training_df[target]
+
+    X_test= testing_df[num_features + cat_features + ["weather_interaction"]]
+    y_test = testing_df[target]
+    ```
 ---
