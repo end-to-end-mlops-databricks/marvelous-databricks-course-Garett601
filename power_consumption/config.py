@@ -10,7 +10,7 @@ class Hyperparameters(BaseModel):
     max_depth: int
 
 
-class Features(BaseModel):
+class ProcessedFeatures(BaseModel):
     num_features: List[str]
     cat_features: List[str]
 
@@ -20,14 +20,16 @@ class Target(BaseModel):
 
 
 class Dataset(BaseModel):
-    id: int
+    raw_data_table: str
+    num_features: List[str]
+    cat_features: List[str]
 
 
 class Config(BaseModel):
     catalog_name: str
     schema_name: str
     hyperparameters: Hyperparameters
-    features: Features
+    processed_features: ProcessedFeatures
     target: Target
     dataset: Dataset
 

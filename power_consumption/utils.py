@@ -80,8 +80,10 @@ def plot_feature_importance(feature_importance, feature_names, top_n=10):
     plt.figure(figsize=(10, 6))
     sorted_idx = np.argsort(feature_importance)
     pos = np.arange(sorted_idx[-top_n:].shape[0]) + 0.5
-    plt.barh(pos, feature_importance[sorted_idx[-top_n:]])
-    plt.yticks(pos, feature_names[sorted_idx[-top_n:]])
+    top_features = feature_importance[sorted_idx[-top_n:]]
+    top_names = [feature_names[i] for i in sorted_idx[-top_n:]]
+    plt.barh(pos, top_features)
+    plt.yticks(pos, top_names)
     plt.title(f"Top {top_n} Feature Importance")
     plt.tight_layout()
     plt.show()

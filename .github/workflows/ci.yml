@@ -18,7 +18,8 @@ jobs:
         run: uv python install 3.11
 
       - name: Install the dependencies
-        run: uv sync
+        run: |
+          uv sync
 
       - name: Run pre-commit checks
         run: |
@@ -27,5 +28,5 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          uv pip install pytest pytest-mock pytest-cov
+          uv pip install pytest pytest-mock pytest-cov pyspark databricks-sdk
           uv run pytest --cov=power_consumption --cov-report=term-missing --cov-fail-under=70 tests/
