@@ -381,6 +381,26 @@ wheels = [
 ]
 
 [[package]]
+name = "databricks-feature-lookup"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "azure-cosmos" },
+    { name = "boto3" },
+    { name = "mlflow" },
+    { name = "numpy" },
+    { name = "pyarrow" },
+    { name = "pymysql" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "sqlalchemy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/67/0c/ed94bce5fd98224a238bfd6bf7fab6a4dfc529c58bb8287f8d1c7612d3a3/databricks-feature-lookup-1.2.0.tar.gz", hash = "sha256:34213e9889367de80fecdd1d5ccf43791fc330ec4d2bfafd710dbb262157752c", size = 72520 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/20/16/d5464c1d6a11896d956dd9b9854c7072ca87333a8d788e3bd176b062bcf5/databricks_feature_lookup-1.2.0-py3-none-any.whl", hash = "sha256:d3f9336192ea6f293d587caf3a0805c29081754319fea43f22d6951c3a4af10d", size = 98113 },
+]
+
+[[package]]
 name = "databricks-sdk"
 version = "0.32.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1265,11 +1285,12 @@ wheels = [
 [[package]]
 name = "power-consumption"
 version = "0.0.1"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "cffi" },
     { name = "cloudpickle" },
     { name = "databricks-feature-engineering" },
+    { name = "databricks-feature-lookup" },
     { name = "databricks-sdk" },
     { name = "lightgbm" },
     { name = "loguru" },
@@ -1278,6 +1299,7 @@ dependencies = [
     { name = "numpy" },
     { name = "pandas" },
     { name = "pandera" },
+    { name = "psutil" },
     { name = "pyarrow" },
     { name = "pydantic" },
     { name = "scikit-learn" },
@@ -1301,6 +1323,7 @@ requires-dist = [
     { name = "cloudpickle", specifier = "==3.1.0" },
     { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.1" },
     { name = "databricks-feature-engineering", specifier = "==0.6" },
+    { name = "databricks-feature-lookup", specifier = "==1.2.0" },
     { name = "databricks-sdk", specifier = "==0.32.0" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5,<7" },
     { name = "lightgbm", specifier = "==4.5.0" },
@@ -1311,6 +1334,7 @@ requires-dist = [
     { name = "pandas", specifier = "==2.2.3" },
     { name = "pandera", specifier = "==0.20.4" },
     { name = "pip", marker = "extra == 'dev'", specifier = ">=24.2" },
+    { name = "psutil", specifier = "==6.0.0" },
     { name = "pyarrow", specifier = "==14.0.1" },
     { name = "pydantic", specifier = "==2.9.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
@@ -1493,6 +1517,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8e/62/8336eff65bcbc8e4cb5d05b55faf041285951b6e80f33e2bff2024788f31/pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199", size = 4891905 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f7/3f/01c8b82017c199075f8f788d0d906b9ffbbc5a47dc9918a945e13d5a2bda/pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a", size = 1205513 },
+]
+
+[[package]]
+name = "pymysql"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/8f/ce59b5e5ed4ce8512f879ff1fa5ab699d211ae2495f1adaa5fbba2a1eada/pymysql-1.1.1.tar.gz", hash = "sha256:e127611aaf2b417403c60bf4dc570124aeb4a57f5f37b8e95ae399a42f904cd0", size = 47678 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0c/94/e4181a1f6286f545507528c78016e00065ea913276888db2262507693ce5/PyMySQL-1.1.1-py3-none-any.whl", hash = "sha256:4de15da4c61dc132f4fb9ab763063e693d521a80fd0e87943b9a453dd4c19d6c", size = 44972 },
 ]
 
 [[package]]

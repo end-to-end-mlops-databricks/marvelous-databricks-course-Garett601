@@ -20,6 +20,8 @@ dependencies = [
     "pandera==0.20.4",
     "pydantic==2.9.2",
     "databricks-sdk==0.32.0",
+    "psutil==6.0.0",
+    "databricks-feature-lookup==1.2.0",
 ]
 
 [project.optional-dependencies]
