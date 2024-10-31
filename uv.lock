@@ -1270,6 +1270,7 @@ dependencies = [
     { name = "cffi" },
     { name = "cloudpickle" },
     { name = "databricks-feature-engineering" },
+    { name = "databricks-sdk" },
     { name = "lightgbm" },
     { name = "loguru" },
     { name = "matplotlib" },
@@ -1286,10 +1287,8 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "databricks-connect" },
-    { name = "databricks-sdk" },
     { name = "ipykernel" },
     { name = "pip" },
-    { name = "pyspark" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
@@ -1300,10 +1299,10 @@ dev = [
 requires-dist = [
     { name = "cffi", specifier = "==1.17.1" },
     { name = "cloudpickle", specifier = "==3.1.0" },
-    { name = "databricks-connect", marker = "extra == 'dev'", specifier = "==15.4.1" },
+    { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.1" },
     { name = "databricks-feature-engineering", specifier = "==0.6" },
-    { name = "databricks-sdk", marker = "extra == 'dev'", specifier = "==0.32.0" },
-    { name = "ipykernel", marker = "extra == 'dev'", specifier = "==6.29.5" },
+    { name = "databricks-sdk", specifier = "==0.32.0" },
+    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5,<7" },
     { name = "lightgbm", specifier = "==4.5.0" },
     { name = "loguru", specifier = "==0.7.2" },
     { name = "matplotlib", specifier = "==3.9.2" },
@@ -1311,14 +1310,13 @@ requires-dist = [
     { name = "numpy", specifier = "==1.26.4" },
     { name = "pandas", specifier = "==2.2.3" },
     { name = "pandera", specifier = "==0.20.4" },
-    { name = "pip", marker = "extra == 'dev'", specifier = "==24.2" },
+    { name = "pip", marker = "extra == 'dev'", specifier = ">=24.2" },
     { name = "pyarrow", specifier = "==14.0.1" },
     { name = "pydantic", specifier = "==2.9.2" },
-    { name = "pyspark", marker = "extra == 'dev'", specifier = "==3.5.3" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = "==8.3.3" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = "==5.0.0" },
-    { name = "pytest-mock", marker = "extra == 'dev'", specifier = "==3.14.0" },
-    { name = "pytest-sugar", marker = "extra == 'dev'", specifier = "==1.0.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0.0" },
+    { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
+    { name = "pytest-sugar", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "scikit-learn", specifier = "==1.5.2" },
     { name = "scipy", specifier = "==1.14.1" },
 ]
@@ -1505,15 +1503,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/8c/d5/e5aeee5387091148a
 wheels = [
     { url = "https://files.pythonhosted.org/packages/be/ec/2eb3cd785efd67806c46c13a17339708ddc346cbb684eade7a6e6f79536a/pyparsing-3.2.0-py3-none-any.whl", hash = "sha256:93d9577b88da0bbea8cc8334ee8b918ed014968fd2ec383e868fb8afb1ccef84", size = 106921 },
 ]
-
-[[package]]
-name = "pyspark"
-version = "3.5.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "py4j" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/9a/90/cb80c8cf194958ab9a3242851c62fa5aef1a0b42f2d9642f1e2eca098005/pyspark-3.5.3.tar.gz", hash = "sha256:68b7cc0c0c570a7d8644f49f40d2da8709b01d30c9126cc8cf93b4f84f3d9747", size = 317304325 }
 
 [[package]]
 name = "pytest"
