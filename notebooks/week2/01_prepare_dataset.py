@@ -27,6 +27,13 @@ train_set, test_set = data_processor.split_data()
 # COMMAND ----------
 train_set.reset_index(inplace=True)
 test_set.reset_index(inplace=True)
+# Convert DateTime to Unix timestamp (milliseconds) and create ID column
+train_set['id'] = train_set['DateTime'].astype('int64') // 10**9
+test_set['id'] = test_set['DateTime'].astype('int64') // 10**9
+
+# Convert to string
+train_set['id'] = train_set['id'].astype(str)
+test_set['id'] = test_set['id'].astype(str)
 # COMMAND ----------
 data_processor.save_to_catalog(train_set=train_set, test_set=test_set, spark=spark)
 # COMMAND ----------
