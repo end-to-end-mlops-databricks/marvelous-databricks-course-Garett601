@@ -42,6 +42,9 @@ from pyspark.sql import SparkSession
 from power_consumption.config import Config
 
 # COMMAND ----------
+spark = SparkSession.builder.getOrCreate()
+
+# COMMAND ----------
 
 # DBTITLE 1,Initialise Databricks Clients
 workspace = WorkspaceClient()
@@ -97,7 +100,7 @@ pipeline = mlflow.sklearn.load_model(f"models:/{catalog_name}.{schema_name}.powe
 # COMMAND ----------
 
 # DBTITLE 1,Prepare DF for feature table
-preds_df = df[["DateTime", "Temperature", "Humidity", "Wind_Speed"]]
+preds_df = df[["id", "Temperature", "Humidity", "Wind_Speed"]]
 
 # COMMAND ----------
 
@@ -123,7 +126,7 @@ preds_df = spark.createDataFrame(preds_df)
 # DBTITLE 1,Feature table
 fe.create_table(
   name=feature_table_name,
-  primary_keys=["DateTime"],
+  primary_keys=["id"],
   df=preds_df,
   description="Power consumption feature table",
 
@@ -141,7 +144,7 @@ spark.sql(f"""
 
 # DBTITLE 1,Online table using feature table
 spec = OnlineTableSpec(
-    primary_key_columns=["DateTime"],
+    primary_key_columns=["id"],
     source_table_full_name=feature_table_name,
     run_triggered=OnlineTableSpecTriggeredSchedulingPolicy.from_dict({"triggered":"true"}),
     perform_full_copy=False,
@@ -163,7 +166,7 @@ online_table_pipeline = workspace.online_tables.create(name=online_table_name, s
 features = [
     FeatureLookup(
         table_name=feature_table_name,
-        lookup_key="DateTime",
+        lookup_key="id",
         feature_names=[
             "Temperature",
             "Humidity",
@@ -178,7 +181,7 @@ features = [
 # COMMAND ----------
 
 # DBTITLE 1,Feature spec for  serving
-feature_spec_name = f"{catalog_name}.{schema_name}.return_predictions"
+feature_spec_name = f"{catalog_name}.{schema_name}.return_predictions_2"
 fe.create_feature_spec(
     name=feature_spec_name,
     features=features,
@@ -224,17 +227,11 @@ host = spark.conf.get("spark.databricks.workspaceUrl")
 # COMMAND ----------
 
 # Convert the Spark DataFrame column to a list
-date_list = preds_df.select("DateTime").rdd.flatMap(lambda x: x).collect()
+id_list = preds_df.select("id").rdd.flatMap(lambda x: x).collect()
 
 # COMMAND ----------
 
-random_date = random.choice(date_list)
-random_date_str = random_date.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "+00:00"
-
-# COMMAND ----------
-
-print(random_date)
-print(random_date_str)
+random_id = random.choice(id_list)
 
 # COMMAND ----------
 
@@ -246,7 +243,7 @@ serving_endpoint = f"https://{host}/serving-endpoints/{endpoint_name}/invocation
 response = requests.post(
     f"{serving_endpoint}",
     headers={"Authorization": f"Bearer {token}"},
-    json={"dataframe_records": [{"DateTime":random_date_str}]},
+    json={"dataframe_records": [{"id":random_id}]},
 )
 
 end_time = time.time()
@@ -259,3 +256,68 @@ print("Execution time:", execution_time, "seconds")
 # COMMAND ----------
 
 # DBTITLE 1,Call endpoint [dataframe_split]
+start_time = time.time()
+
+response = requests.post(
+    f"{serving_endpoint}",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"dataframe_split": {"columns": ["id"], "data": [[random_id]]}},
+)
+
+end_time = time.time()
+execution_time = end_time - start_time
+
+print("Response status:", response.status_code)
+print("Response text:", response.text)
+print("Execution time:", execution_time, "seconds")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Load Test
+
+# COMMAND ----------
+
+headers = {"Authorization": f"Bearer {token}"}
+num_requests = 10
+
+# COMMAND ----------
+
+# DBTITLE 1,Function to make requests and record latency
+def send_request():
+    random_id = random.choice(id_list)
+    start_time = time.time()
+    response = requests.post(
+        serving_endpoint,
+        headers=headers,
+        json={"dataframe_records": [{"id": random_id}]},
+    )
+    end_time = time.time()
+    latency = end_time - start_time
+    return response.status_code, latency
+
+# COMMAND ----------
+
+# DBTITLE 1,Send multiple requests and measure latency
+# Measure total execution time
+total_start_time = time.time()
+latencies = []
+
+# Send requests concurrently
+with ThreadPoolExecutor(max_workers=100) as executor:
+    futures = [executor.submit(send_request) for _ in range(num_requests)]
+
+    for future in as_completed(futures):
+        status_code, latency = future.result()
+        latencies.append(latency)
+
+total_end_time = time.time()
+total_execution_time = total_end_time - total_start_time
+
+# Calculate the average latency
+average_latency = sum(latencies) / len(latencies)
+
+print("\nTotal execution time:", total_execution_time, "seconds")
+print("Average latency per request:", average_latency, "seconds")
+
+# COMMAND ----------
