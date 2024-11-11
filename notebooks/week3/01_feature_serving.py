@@ -42,9 +42,6 @@ from pyspark.sql import SparkSession
 from power_consumption.config import Config
 
 # COMMAND ----------
-spark = SparkSession.builder.getOrCreate()
-
-# COMMAND ----------
 
 # DBTITLE 1,Initialise Databricks Clients
 workspace = WorkspaceClient()
