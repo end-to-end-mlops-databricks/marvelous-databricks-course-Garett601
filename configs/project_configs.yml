@@ -6,6 +6,13 @@ hyperparameters:
   n_estimators: 1000
   max_depth: 6
 
+ab_test_hyperparameters:
+  learning_rate_a: 0.02
+  learning_rate_b: 0.02
+  n_estimators: 1000
+  max_depth_a: 6
+  max_depth_b: 10
+
 processed_features:
   num_features:
     - Temperature
