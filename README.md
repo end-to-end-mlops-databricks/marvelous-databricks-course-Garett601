@@ -121,6 +121,7 @@ week 2
 - In example code, the features generated at runtime were not used in the fe model
 > **Workaround**
 - Ran the feature engineering notebook from Databricks workspace, this resolved permissions issues
+    - Feature Engineering package limitations [documentation](https://docs.databricks.com/en/machine-learning/feature-store/python-api.html#limitations)
 - Ran the feature engineering feature function on the training and testing set and included the new features in the fe model
 -   ```python
     testing_set = fe.create_training_set(
