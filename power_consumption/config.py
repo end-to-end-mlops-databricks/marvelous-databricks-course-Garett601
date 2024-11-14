@@ -10,6 +10,14 @@ class Hyperparameters(BaseModel):
     max_depth: int
 
 
+class ABTestHyperparameters(BaseModel):
+    learning_rate_a: float
+    learning_rate_b: float
+    n_estimators: int
+    max_depth_a: int
+    max_depth_b: int
+
+
 class ProcessedFeatures(BaseModel):
     num_features: List[str]
     cat_features: List[str]
@@ -29,6 +37,7 @@ class Config(BaseModel):
     catalog_name: str
     schema_name: str
     hyperparameters: Hyperparameters
+    ab_test_hyperparameters: ABTestHyperparameters
     processed_features: ProcessedFeatures
     target: Target
     dataset: Dataset
