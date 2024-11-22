@@ -17,8 +17,7 @@ resources:
 
       tasks:
         - task_key: preprocessing
-          # job_cluster_key: "power-consumption-cluster"
-          existing_cluster_id: 0712-074500-f3l4sge0
+          job_cluster_key: "power-consumption-cluster"
           spark_python_task:
             python_file: "${var.jobs_dir}/preprocess.py"
             parameters:
@@ -38,8 +37,7 @@ resources:
           depends_on:
             - task_key: "if_refreshed"
               outcome: "true"
-          # job_cluster_key: "power-consumption-cluster"
-          existing_cluster_id: 0712-074500-f3l4sge0
+          job_cluster_key: "power-consumption-cluster"
           spark_python_task:
             python_file: "${var.jobs_dir}/train_model.py"
             parameters:
@@ -54,8 +52,7 @@ resources:
         - task_key: "evaluate_model"
           depends_on:
             - task_key: "train_model"
-          # job_cluster_key: "power-consumption-cluster"
-          existing_cluster_id: 0712-074500-f3l4sge0
+          job_cluster_key: "power-consumption-cluster"
           spark_python_task:
             python_file: "${var.jobs_dir}/evaluate_model.py"
             parameters:
@@ -67,5 +64,24 @@ resources:
               - "{{job.id}}"
               - "--git_sha"
               - ${var.git_sha}
+          libraries:
+            - whl: ../dist/*.whl
+        - task_key: model_update
+          condition_task:
+            op: "EQUAL_TO"
+            left: "{{tasks.evaluate_model.values.model_update}}"
+            right: "1"
+          depends_on:
+            - task_key: "evaluate_model"
+        - task_key: "deploy_model"
+          depends_on:
+            - task_key: "model_update"
+              outcome: "true"
+          job_cluster_key: "power-consumption-cluster"
+          spark_python_task:
+            python_file: "${var.jobs_dir}/deploy_model.py"
+            parameters:
+              - "--config_path"
+              - ${var.configs_dir}/project_configs.yml
           libraries:
             - whl: ../dist/*.whl
