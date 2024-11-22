@@ -109,9 +109,6 @@ X_test_spark = testing_df.select(["DateTime"] + num_features + cat_features + ["
 y_test_spark = testing_df.select(["id"] + target)
 
 
-new_model_uri = model_uri = "runs:/2ef77d3a642e4b7ab50b759a40ae0425/lightgbm-pipeline-model-fe"
-
-
 predictions_previous = fe.score_batch(model_uri=previous_model_uri, df=X_test_spark)
 predictions_new = fe.score_batch(model_uri=new_model_uri, df=X_test_spark)
 
