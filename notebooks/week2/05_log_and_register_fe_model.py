@@ -68,7 +68,8 @@ test_set = spark.table(f"{catalog_name}.{schema_name}.test_set")
 
 spark.sql(f"""
 CREATE OR REPLACE TABLE {feature_table_name} (
-    DateTime TIMESTAMP NOT NULL,
+    id STRING NOT NULL,
+    DateTime TIMESTAMP,
     Temperature DOUBLE,
     Humidity DOUBLE,
     Wind_Speed DOUBLE,
@@ -88,7 +89,7 @@ CREATE OR REPLACE TABLE {feature_table_name} (
 spark.sql(f"""
     ALTER TABLE {feature_table_name}
     ADD CONSTRAINT power_consumption_pk
-    PRIMARY KEY(DateTime)
+    PRIMARY KEY(id)
 """)
 
 # Enable Change Data Feed
@@ -102,6 +103,7 @@ spark.sql(f"""
 spark.sql(f"""
 INSERT INTO {catalog_name}.{schema_name}.power_consumption_features
 SELECT
+    id,
     DateTime,
     Temperature,
     Humidity,
@@ -122,6 +124,7 @@ FROM {catalog_name}.{schema_name}.train_set
 spark.sql(f"""
 INSERT INTO {catalog_name}.{schema_name}.power_consumption_features
 SELECT
+    id,
     DateTime,
     Temperature,
     Humidity,
@@ -175,7 +178,7 @@ training_set = fe.create_training_set(
         FeatureLookup(
             table_name=feature_table_name,
             feature_names=["general_diffuse_flows", "diffuse_flows"],
-            lookup_key="DateTime",
+            lookup_key="id",
         ),
         FeatureFunction(
             udf_name=function_name,
@@ -278,3 +281,5 @@ with mlflow.start_run(
 mlflow.register_model(
 model_uri=f'runs:/{run_id}/lightgbm-pipeline-model-fe',
 name=f"{catalog_name}.{schema_name}.power_consumption_model_fe")
+
+# COMMAND ----------
