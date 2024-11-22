@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
 
 from power_consumption.config import Config
 from power_consumption.preprocessing.data_preprocessor import DataProcessor
@@ -17,8 +18,12 @@ raw_data_table = config.dataset.raw_data_table
 # COMMAND ----------
 data = spark.table(f"{catalog_name}.{schema_name}.{raw_data_table}").toPandas().drop(columns=["_rescued_data"])
 data["DateTime"] = pd.to_datetime(data["DateTime"])
+
+test_df = spark.table(f"{catalog_name}.{schema_name}.test_set")
+
+max_test_date = test_df.select(F.max("DateTime")).collect()[0][0]
 # COMMAND ----------
-def generate_synthetic_data(df, num_rows=1008):
+def generate_synthetic_data(df, num_rows=1008, last_datetime=max_test_date):
     """
     Generate synthetic data matching the structure of the given dataset.
 
@@ -35,8 +40,6 @@ def generate_synthetic_data(df, num_rows=1008):
         A synthetic dataset matching the structure of the raw data.
     """
     synthetic_data = pd.DataFrame()
-
-    last_datetime = pd.to_datetime(df['DateTime'].max())
     synthetic_datetimes = [last_datetime + pd.Timedelta(minutes=10 * i) for i in range(1, num_rows + 1)]
     synthetic_data['DateTime'] = synthetic_datetimes
 
@@ -49,7 +52,7 @@ def generate_synthetic_data(df, num_rows=1008):
 
     return synthetic_data
 # COMMAND ----------
-synthetic_data = generate_synthetic_data(data, num_rows=1008)
+synthetic_data = generate_synthetic_data(data, num_rows=1008, last_datetime=max_test_date)
 # COMMAND ----------
 data_processor = DataProcessor(config, synthetic_data)
 data_processor.preprocess_data()
