@@ -51,3 +51,21 @@ resources:
               - "{{job.id}}"
           libraries:
             - whl: ../dist/*.whl
+        - task_key: "evaluate_model"
+          depends_on:
+            - task_key: "train_model"
+          # job_cluster_key: "power-consumption-cluster"
+          existing_cluster_id: 0712-074500-f3l4sge0
+          spark_python_task:
+            python_file: "${var.jobs_dir}/evaluate_model.py"
+            parameters:
+              - "--config_path"
+              - ${var.configs_dir}/project_configs.yml
+              - "--new_model_uri"
+              - "{{tasks.train_model.values.new_model_uri}}"
+              - "--job_run_id"
+              - "{{job.id}}"
+              - "--git_sha"
+              - ${var.git_sha}
+          libraries:
+            - whl: ../dist/*.whl
