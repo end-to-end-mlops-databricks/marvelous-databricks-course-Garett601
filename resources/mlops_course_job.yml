@@ -17,8 +17,8 @@ resources:
 
       tasks:
         - task_key: preprocessing
-          job_cluster_key: "power-consumption-cluster"
-          # existing_cluster_id: 0712-074500-f3l4sge0
+          # job_cluster_key: "power-consumption-cluster"
+          existing_cluster_id: 0712-074500-f3l4sge0
           spark_python_task:
             python_file: "${var.jobs_dir}/preprocess.py"
             parameters:
@@ -33,3 +33,21 @@ resources:
             right: "1"
           depends_on:
             - task_key: "preprocessing"
+
+        - task_key: "train_model"
+          depends_on:
+            - task_key: "if_refreshed"
+              outcome: "true"
+          # job_cluster_key: "power-consumption-cluster"
+          existing_cluster_id: 0712-074500-f3l4sge0
+          spark_python_task:
+            python_file: "${var.jobs_dir}/train_model.py"
+            parameters:
+              - "--config_path"
+              - ${var.configs_dir}/project_configs.yml
+              - "--git_sha"
+              - ${var.git_sha}
+              - "--job_run_id"
+              - "{{job.id}}"
+          libraries:
+            - whl: ../dist/*.whl

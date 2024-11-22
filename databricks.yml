@@ -18,6 +18,9 @@ variables:
   jobs_dir:
     description: Directory containing job files.
     default: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}/files/power_consumption/jobs
+  git_sha:
+    description: git_sha
+    default: abcd
 
 targets:
   dev:
