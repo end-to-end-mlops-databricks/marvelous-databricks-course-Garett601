@@ -1,19 +1,23 @@
 """Tests for utility functions in the power consumption project."""
 
-from pathlib import Path
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pytest
+from pyspark.sql import SparkSession
 
 from power_consumption.utils import (
     visualise_results,
     plot_actual_vs_predicted,
     plot_feature_importance,
+    get_dbutils,
 )
 
-
+@pytest.fixture
+def mock_spark(mocker):
+    spark = mocker.Mock(spec=SparkSession)
+    spark.conf = mocker.Mock()
+    return spark
 
 @pytest.mark.parametrize("n_targets", [1, 3])
 def test_visualise_results(n_targets, mocker):
@@ -68,3 +72,27 @@ def test_plot_feature_importance(n_features, top_n, mocker):
     mock_show = mocker.patch.object(plt, "show")
     plot_feature_importance(feature_importance, feature_names, top_n)
     mock_show.assert_called_once()
+
+
+def test_get_dbutils_databricks_environment(mock_spark, mocker):
+    mock_spark.conf.get.return_value = "true"
+
+    mock_dbutils = mocker.patch("pyspark.dbutils.DBUtils")
+    mock_dbutils.return_value = "mock_databricks_dbutils"
+
+    result = get_dbutils(mock_spark)
+
+    assert result == "mock_databricks_dbutils"
+    mock_dbutils.assert_called_once_with(mock_spark)
+
+
+def test_get_dbutils_local_environment(mock_spark, mocker):
+    mock_spark.conf.get.return_value = "false"
+
+    mock_ipython = mocker.Mock()
+    mock_ipython.user_ns = {"dbutils": "mock_ipython_dbutils"}
+    mocker.patch("IPython.get_ipython", return_value=mock_ipython)
+
+    result = get_dbutils(mock_spark)
+
+    assert result == "mock_ipython_dbutils"
