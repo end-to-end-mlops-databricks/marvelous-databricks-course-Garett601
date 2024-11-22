@@ -153,7 +153,7 @@ if mae_new < mae_old:
         tags={"git_sha": f"{git_sha}", "job_run_id": job_run_id},
     )
 
-    logger.info("New model registered with version:", model_version.version)
+    logger.info(f"New model registered with version: {model_version.version}")
     dbutils.jobs.taskValues.set(key="model_version", value=model_version.version)
     dbutils.jobs.taskValues.set(key="model_update", value=1)
 else:
