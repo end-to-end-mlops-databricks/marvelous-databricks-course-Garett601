@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+from pyspark.sql import SparkSession
 
 
 def visualise_results(y_test, y_pred, target_names):
@@ -87,3 +88,28 @@ def plot_feature_importance(feature_importance, feature_names, top_n=10):
     plt.title(f"Top {top_n} Feature Importance")
     plt.tight_layout()
     plt.show()
+
+
+def get_dbutils(spark: SparkSession) -> object:
+    """
+    Get the dbutils object based on the SparkSession.
+
+    Parameters:
+        spark (pyspark.sql.SparkSession): The SparkSession object.
+
+    Returns:
+        object: The dbutils object.
+
+    """
+    dbutils = None
+    if spark.conf.get("spark.databricks.service.client.enabled") == "true":
+        from pyspark.dbutils import DBUtils  # type: ignore
+
+        dbutils = DBUtils(spark)
+
+    else:
+        import IPython
+
+        dbutils = IPython.get_ipython().user_ns["dbutils"]
+
+    return dbutils
