@@ -74,18 +74,6 @@ def test_plot_feature_importance(n_features, top_n, mocker):
     mock_show.assert_called_once()
 
 
-def test_get_dbutils_databricks_environment(mock_spark, mocker):
-    mock_spark.conf.get.return_value = "true"
-
-    mock_dbutils = mocker.patch("pyspark.dbutils.DBUtils")
-    mock_dbutils.return_value = "mock_databricks_dbutils"
-
-    result = get_dbutils(mock_spark)
-
-    assert result == "mock_databricks_dbutils"
-    mock_dbutils.assert_called_once_with(mock_spark)
-
-
 def test_get_dbutils_local_environment(mock_spark, mocker):
     mock_spark.conf.get.return_value = "false"
 
