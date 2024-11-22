@@ -125,9 +125,6 @@ df = test_set.join(predictions_new, on="id").join(predictions_old, on="id")
 df = df.withColumn("error_new", F.abs(df["Zone_1_Power_Consumption"] - df["prediction_new"]))
 df = df.withColumn("error_old", F.abs(df["Zone_1_Power_Consumption"] - df["prediction_old"]))
 
-# Calculate the absolute error for each model
-df = df.withColumn("error_new", F.abs(df["Zone_1_Power_Consumption"] - df["prediction_new"]))
-df = df.withColumn("error_old", F.abs(df["Zone_1_Power_Consumption"] - df["prediction_old"]))
 
 # Calculate the Mean Absolute Error (MAE) for each model
 mae_new = df.agg(F.mean("error_new")).collect()[0][0]
