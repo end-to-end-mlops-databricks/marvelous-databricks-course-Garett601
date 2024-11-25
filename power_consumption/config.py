@@ -36,6 +36,7 @@ class Dataset(BaseModel):
 class Config(BaseModel):
     catalog_name: str
     schema_name: str
+    pipeline_id: str
     hyperparameters: Hyperparameters
     ab_test_hyperparameters: ABTestHyperparameters
     processed_features: ProcessedFeatures
